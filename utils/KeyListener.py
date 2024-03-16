@@ -18,9 +18,8 @@ class KeyListener:
       KEY_LEFT_ALT2: Move.left,
       KEY_RIGHT_ALT2: Move.right,
     }
-    print(event, matrix)
     done = False
-    if key == KEY_QUIT: 
+    if key == KEY_QUIT:
       exit()
     elif key in commands:
       matrix, done = commands[key](matrix)

@@ -1,4 +1,12 @@
+from constants.color import *
+
 class GameState:
+  def __init__(self):
+    self.__state = "not over"
+  
+  def getstate(self):
+    return self.__state
+
   # 检查矩阵中是否有2048
   def __check_win(matrix):
     for i in range(len(matrix)):
@@ -15,24 +23,8 @@ class GameState:
           return True
     return False
 
-  # 检查相邻的单元格是否相同(只能用于4x4的矩阵)
-  def __check_same_adjacent(matrix):
-    # 检查每一行的第一个和最后一个单元格
-    for i in range(len(matrix)):
-      if matrix[i][0] == matrix[i][1]:
-        return True
-      if matrix[i][len(matrix[0])-1] == matrix[i][len(matrix[0])-2]:
-        return True
-    # 检查每一列的第一个和最后一个单元格
-    for j in range(len(matrix[0])):
-      if matrix[0][j] == matrix[1][j]:
-        return True
-      if matrix[len(matrix)-1][j] == matrix[len(matrix)-2][j]:
-        return True
-    return False
-
   # 检查相邻的单元格是否相同
-  def __check_same_adjacentN(matrix, n):
+  def __check_same_adjacent(matrix):
     for i in range(len(matrix)-1):
       for j in range(len(matrix[0])-1):
         if matrix[i][j] == matrix[i+1][j] or matrix[i][j+1] == matrix[i][j]:
@@ -46,11 +38,27 @@ class GameState:
     return False
 
   # 检查游戏状态
-  def game_state(matrix):
+  def game_state(self, matrix):
+    flag = False
     if GameState.__check_win(matrix):
-      return 'win'
+      flag = True
+      self.__state = 'win'
     if GameState.__check_empty(matrix):
-      return 'not over'
+      flag = True
+      self.__state = 'not over'
     if GameState.__check_same_adjacent(matrix):
-      return 'not over'
-    return 'lose'
+      flag = True
+      self.__state = 'not over'
+    elif not flag:
+      self.__state = 'lose'
+    return self.__state
+  
+  def showState(self, grid_cells, matrix):
+    if self.game_state(matrix) == 'not over':
+      return
+    if self.__state == 'win':
+        grid_cells[1][1].configure(text="You", bg=BACKGROUND_COLOR_CELL_EMPTY)
+        grid_cells[1][2].configure(text="Win!", bg=BACKGROUND_COLOR_CELL_EMPTY)
+    if self.__state == 'lose':
+      grid_cells[1][1].configure(text="You", bg=BACKGROUND_COLOR_CELL_EMPTY)
+      grid_cells[1][2].configure(text="Lose!", bg=BACKGROUND_COLOR_CELL_EMPTY)
