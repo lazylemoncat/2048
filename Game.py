@@ -1,3 +1,4 @@
+from utils.Move import Move
 from utils.Window import Window
 from utils.Matrix import Matrix
 from utils.GameState import GameState
@@ -11,8 +12,6 @@ class Game():
   def __init__(self):
     # 初始化窗口
     self.Window = Window(self.__key_down)
-    # 初始化格子
-    self.grid_cells = self.Window.getGridCells()
     # 初始化游戏状态
     self.gameState = GameState()
     # 初始化矩阵
@@ -21,6 +20,22 @@ class Game():
     self.Window.update_grid_cells(self.matrix)
     # 是否发生了变化
     self.__done = False
+
+  def move(self, direction):
+    if direction == "w":
+      self.matrix, done = Move.up(self.matrix)
+    elif direction == "s":
+      self.matrix, done = Move.down(self.matrix)
+    elif direction == "a":
+      self.matrix, done = Move.left(self.matrix)
+    elif direction == "d":
+      self.matrix, done = Move.right(self.matrix)
+    if done:
+      self.matrix = Matrix.add_two(self.matrix)
+      self.Window.update_grid_cells(self.matrix)
+      grid_cells = self.Window.getGridCells()
+      self.gameState.showState(grid_cells, self.matrix)
+    self.__done = done
 
   def run(self):
     self.Window.mainloop()

@@ -61,10 +61,12 @@ class Matrix:
 
   # 矩阵元素合并
   def merge(mat, done):
+    score = 0
     for i in range(GRID_LEN):
       for j in range(GRID_LEN-1):
         if mat[i][j] == mat[i][j+1] and mat[i][j] != 0:
           mat[i][j] *= 2
           mat[i][j+1] = 0
+          score += mat[i][j]
           done = True
-    return mat, done
+    return mat, done, score

@@ -7,14 +7,6 @@ class GameState:
   def getstate(self):
     return self.__state
 
-  # 检查矩阵中是否有2048
-  def __check_win(matrix):
-    for i in range(len(matrix)):
-      for j in range(len(matrix[0])):
-        if matrix[i][j] == 2048:
-          return True
-    return False
-
   # 检查矩阵中是否有0
   def __check_empty(matrix):
     for i in range(len(matrix)):
@@ -40,9 +32,6 @@ class GameState:
   # 检查游戏状态
   def game_state(self, matrix):
     flag = False
-    if GameState.__check_win(matrix):
-      flag = True
-      self.__state = 'win'
     if GameState.__check_empty(matrix):
       flag = True
       self.__state = 'not over'
@@ -56,9 +45,6 @@ class GameState:
   def showState(self, grid_cells, matrix):
     if self.game_state(matrix) == 'not over':
       return
-    if self.__state == 'win':
-        grid_cells[1][1].configure(text="You", bg=BACKGROUND_COLOR_CELL_EMPTY)
-        grid_cells[1][2].configure(text="Win!", bg=BACKGROUND_COLOR_CELL_EMPTY)
     if self.__state == 'lose':
       grid_cells[1][1].configure(text="You", bg=BACKGROUND_COLOR_CELL_EMPTY)
       grid_cells[1][2].configure(text="Lose!", bg=BACKGROUND_COLOR_CELL_EMPTY)
