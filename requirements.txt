@@ -1,8 +1,5 @@
 numpy
 pandas
 gymnasium
-pickle
-itertools
 seaborn
-matplotlib
 tqdm
