@@ -114,7 +114,7 @@ class DQN(torch.nn.Module):
     batch_reward = torch.tensor(batch_reward, dtype=torch.float)
     batch_next_state = np.array(batch_next_state)
     batch_next_state = torch.tensor(batch_next_state, dtype=torch.float)
-    # 设备
+    # 设备a
     batch_state = batch_state.to(self.device)
     batch_action = batch_action.to(self.device)
     batch_reward = batch_reward.to(self.device)
@@ -143,8 +143,8 @@ class DQN(torch.nn.Module):
     self.target_net.load_state_dict(self.policy_net.state_dict())
 
   def save_model(self, filename='model.pth'):
-    if self.path is not None:
-      filename = self.path
+    if self.path is None:
+      self.path = filename
     torch.save({
       'state_dict': self.policy_net.state_dict(),
       'train_time': int(time.time() - self.start_time + self.trained_time),
@@ -154,14 +154,19 @@ class DQN(torch.nn.Module):
     if self.path is not None:
       filename = self.path
     if os.path.isfile(filename):
+      DQN_CNN_onehot = Net
       model_params = torch.load(filename)
       self.policy_net.load_state_dict(model_params['state_dict'])
       self.target_net.load_state_dict(model_params['state_dict'])
-      self.trained_time = model_params['train_time']
+      if 'train_time' in model_params:
+        self.trained_time = model_params['train_time']
   
   def get_train_time(self):
     if self.path is not None:
       filename = self.path
       if os.path.isfile(filename):
         model_params = torch.load(filename)
-        return model_params['train_time']
+        if 'train_time' in model_params:
+          return model_params['train_time']
+        else:
+          return 0

@@ -1,20 +1,34 @@
+import os
 import threading
-from time import sleep
+import numpy as np
 import torch
 import tqdm
 from env import env as environment
 from DQN.DQN import DQN
 from verify import verify
+from utils.TrainingLogger import TrainingLogger
 
-def runModel(env, dqn, batch_size=32, episodes=100, is_train=True):
+def one_hot(state):
+  state = np.array(state).reshape(4, 4)
+  one_hot_state = np.zeros((16, state.shape[0], state.shape[1]), dtype=np.float16)
+  basecode = np.eye(16)
+  for m in range(state.shape[0]):
+      for n in range(state.shape[1]):
+          value = state[m, n]
+          one_hot_state[:, m, n] = basecode[int(np.log2(value) if value != 0 else 0), :]
+  return one_hot_state
+
+def runModel(env, dqn, logger, batch_size=32, episodes=100, is_train=True):
   for _ in tqdm.trange(episodes):
     done = False
     env.reset()
     steps = 0
     while not done:
       observation = env.state
+      observation = one_hot(observation)
       action = dqn.select_action(observation, epsilon=0)
       new_observation, reward, done, info = env.step(action)
+      new_observation = one_hot(new_observation)
       if reward < 0:
         steps += 1
       else:
@@ -31,16 +45,23 @@ def runModel(env, dqn, batch_size=32, episodes=100, is_train=True):
 
 def train(env, dqn):
   i = 0
+  logger = TrainingLogger()
+  loggerIllegalMove = TrainingLogger()
   while True:
     print("第{}次训练".format(i))
     i += 1
-    runModel(env, dqn)
+    runModel(env, dqn, logger)
     env.reset()
-    average_num = verify(env, dqn, EPISODES=1)
-    # if average_num > -1:
-    #   break
+    average_num, highest_num, IllegalMove = verify(env, dqn, EPISODES=1)
+    logger.log(highest_num)
+    loggerIllegalMove.log(IllegalMove)
+    if i % 10 == 0:
+      dqn.save_model(f"models/model2{i}.pth")
+      logger.plot()
+      loggerIllegalMove.plot()
+      logger.clear()
+      loggerIllegalMove.clear()
     dqn.update()
-    dqn.save_model()
 
 def main():
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -50,7 +71,7 @@ def main():
     input_size=16, 
     output_size=4,
     memory_capacity=10000,
-    path="model3.pth",
+    path="model2.pth",
     device=device
   ).to(device)
   print(f"{dqn.get_train_time()}")
