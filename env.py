@@ -6,7 +6,7 @@ from utils.GameState import GameState
 from utils.KeyListener import KeyListener
 from utils.Matrix import Matrix
 from utils.Move import Move
-from utils.Window import Window
+# from utils.Window import Window
 
 class IllegalMove(Exception):
   pass
@@ -132,10 +132,11 @@ class env(gym.Env):
       self.__done = done
 
   def render(self):
-      self.window = Window(self.__key_down)
+      # self.window = Window(self.__key_down)
       # 刷新格子文本组件
-      self.window.update_grid_cells(self.matrix)
-      self.window.mainloop()
+      # self.window.update_grid_cells(self.matrix)
+      # self.window.mainloop()
+      pass
 
   def close(self):
       pass
