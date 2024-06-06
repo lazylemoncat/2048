@@ -71,10 +71,11 @@ def main():
     input_size=16, 
     output_size=4,
     memory_capacity=10000,
-    path="model2.pth",
+    path=f"models/model230.pth",
     device=device
   ).to(device)
   print(f"{dqn.get_train_time()}")
+  print(f"{device}")
   thread_train = threading.Thread(target=train, args=(env, dqn))
   thread_train.start()
   # env.render()
