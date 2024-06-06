@@ -37,5 +37,5 @@ class TrainingLogger:
     plt.yticks(fontsize=12)
 
     plt.tight_layout()
-    # 时间
+    plt.gca().get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
     plt.savefig(f"imgs/training-{time.strftime('%Y-%m-%d%H_%M_%S', time.localtime())}.png")
